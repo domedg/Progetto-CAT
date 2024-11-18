@@ -1,4 +1,4 @@
-# Progetto_CAT
+# Progetto CAT
 Progetto di Controlli Automatici T, corso di laurea in Ingegneria Informatica T, UniBo
 
 
