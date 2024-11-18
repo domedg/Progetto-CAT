@@ -1,5 +1,5 @@
 # Progetto CAT
-Progetto di Controlli Automatici T, corso di laurea in Ingegneria Informatica T, UniBo
+Progetto di Controlli Automatici T (Ingegneria Informatica T - Alma Mater Studiorum, Università di Bologna)
 
 
 
