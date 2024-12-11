@@ -2,7 +2,10 @@
 % Barone Leonardo, Del Giudice Domenico, Galli Francesco, Guzzonato Leonardo
 
 clear all; close all; clc;
-% Paramentri Tecnologici
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%% Paramentri Tecnologici %%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 r_s=1.7; %tasso riproduzione cellule suscettibili
 r_r=1.4; %tasso riproduzione cellule resistenti
 K=500; %num massimo cellule dell'ambiente
@@ -14,28 +17,16 @@ m_r=0.05; %mortalità resistenti
 n_s_e=100; %equilibrio suscettibili
 n_r_e=400; %equilibrio resistenti
 
-% Equazioni Differenziali
-%n_s'=-r_s*ln((n_s+n_r)/K)*n_s-m_s*c_f*n_s-beta*n_s+gamma*n_r-alfa*c_f*n_s
-%n_r'=-r_r*ln((n_s+n_r)/K)*n_r-m_r*c_f*n_r+beta*n_s-gamma*n_r+alfa*c_f*n_s
-
-%% Punto1
-
-%x1'(t)=f1(x(t),u(t))=-r_s*ln((x1(t)+x2(t))/K)*x1(t)-m_s*u(t)*x1(t)-beta*x1(t)+gamma*x2(t)-alfa*u(t)*x1(t)
-%x2'(t)=f2(x(t),u(t))=-r_r*ln((x1(t)+x2(t))/K)*x2(t)-m_r*u(t)*x2(t)+beta*x1(t)-gamma*x2(t)+alfa*u(t)*x1(t)
-%y(t)=h(x(t),u(t))=x2(t)
-
-%u(t)=(-r_s*ln((x1(t)+x2(t))/K)*x1(t)-beta*x1(t)+gamma*x2(t))/((m_s+alfa)*x1(t))
-%u(t)=(-r_r*ln((x1(t)+x2(t))/K)*x2(t)+beta*x1(t)-gamma*x2(t))/((m_r*x2(t)-alfa*x1(t))
-%con xe1=n_s_e=100   xe2=n_r_e=100
-%u_e_1=(-r_s*log((n_s_e+n_r_e)/K)*n_s_e-beta*n_s_e+gamma*n_r_e)/((m_s+alfa)*n_s_e)
-%u_e_2=(-r_r*log((n_s_e+n_r_e)/K)*n_r_e+beta*n_s_e-gamma*n_r_e)/(m_r*n_r_e-alfa*n_s_e)
-%abbiamo verificato che esiste u_e=u_e_1=u_e_2=0
 u_e=0;
 xe1=n_s_e;
 xe2=n_r_e;
 
-%linearizzazione nell'intorno dell'equilibrio
 
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%% Linearizzazione nell'intorno dell'equilibrio %%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 A=[r_s*(1-(2*xe1+xe2)/K)-m_s*u_e-beta-alfa*u_e, (r_s*xe1)/K+gamma;
     (r_r*xe2)/K+beta+alfa*u_e, r_r*(1-(xe1+2*xe2)/K)-m_r*u_e-gamma];
 A
@@ -45,65 +36,216 @@ C=[0, 1];
 C
 D=0;
 D
-%% Punto2
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%% PUNTO 2 %%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %funzione di trasferimento
-% s=tf('s');
-% GG1=C*(inv(s*eye(2)-A))*B-D;
 modello = ss(A,B,C,D);
 GG = tf(modello);
 
 GG
-p=pole(GG);
-z=zero(GG);
-p
-z
+% Calcolo dei poli e degli zeri della funzione di trasferimento
+p = pole(GG);
+z = zero(GG);
 
+% Stampa dei poli
+fprintf('Poli della funzione di trasferimento:\n');
+disp(p);
+
+% Stampa degli zeri
+fprintf('Zeri della funzione di trasferimento:\n');
+disp(z);
+
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%% PUNTO 3 %%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Patch specifiche
+% 3.1 Errore a regime nullo 
+WW = -110;
+DD = -20;
+e_star = 0;
+
+% 3.2 Margine di fase
+Mf_esp = 45;
+
+% 3.3 Sovraelongazione percentuale massima 10%  
+S_100_spec = 0.1;
+
+% 3.4 Tempo d'assestamento al epsilon% = 5%
+epsilon = 0.05;
+T_star = 0.2;
+
+% 3.5attenuazione disturbo sull'uscita
+A_d = 45; %valore in Db
+omega_d_min = 0;
+omega_d_MAX = 0.1;
+
+% attenuazione disturbo di misura
+A_n = 80; %% valore in Db
+omega_n_min = 5*10^3;
+omega_n_MAX = 5*10^6;
+
+
+%% Diagramma di Bode
+figure(1);
 bode(GG);
+grid on, zoom on;
 
-%% Visualizzazione del diagramma di Bode
-% Creazione della figura
-figure('Name', 'Diagramma di Bode', 'NumberTitle', 'off', 'Color', 'w');
+%3.2 scrivere calcolo specifiche S% => Margine di fase
+logsq = (log(S_100_spec))^2;
+xi = sqrt(logsq/(pi^2+logsq));
+Mf_spec = xi*100;
+% Uso 300 perchè ln(1/0.05) = circa 3, deriva dalla formula del punto 4.
+omega_Ta_MAX = 300/(Mf_spec*T_star); 
+omega_Ta_min = 1e-4; % lower bound per il plot
 
-% Disegna il diagramma di Bode
-[mag, phase, wout] = bode(GG);
+% Specifiche sovraelongazione (margine di fase)
+omega_c_min = omega_Ta_MAX;
+omega_c_MAX = omega_n_min;
 
-% Personalizzazione
-subplot(2, 1, 1); % Magnitudine
-semilogx(wout, 20*log10(squeeze(mag)), 'LineWidth', 1.5, 'Color', '#0072BD'); % Linea blu
-grid on;
-title('Diagramma di Bode - Magnitudine', 'FontSize', 14, 'FontWeight', 'bold');
-xlabel('Frequenza (\omega) [rad/s]', 'FontSize', 12);
-ylabel('Ampiezza [dB]', 'FontSize', 12);
-set(gca, 'FontSize', 12, 'GridAlpha', 0.3, 'MinorGridAlpha', 0.1);
+phi_spec = Mf_spec - 180;
+phi_low = -270; % lower bound per il plot
 
-subplot(2, 1, 2); % Fase
-semilogx(wout, squeeze(phase), 'LineWidth', 1.5, 'Color', '#D95319'); % Linea arancione
-grid on;
-title('Diagramma di Bode - Fase', 'FontSize', 14, 'FontWeight', 'bold');
-xlabel('Frequenza (\omega) [rad/s]', 'FontSize', 12);
-ylabel('Fase [°]', 'FontSize', 12);
-set(gca, 'FontSize', 12, 'GridAlpha', 0.3, 'MinorGridAlpha', 0.1);
+%% Patch specifiche
+figure(2);
+hold on;
 
-% Personalizzazione generale
-sgtitle('Diagramma di Bode della Funzione di Trasferimento', 'FontSize', 16, 'FontWeight', 'bold');
-
+% Specifiche su d
+omega_plot_min = 1e-4;
+omega_plot_max = 1e6;
+Bnd_d_x = [omega_plot_min; omega_d_MAX; omega_d_MAX; omega_plot_min];
+Bnd_d_y = [A_d;A_d;-100;-100];
 
 
+% Specifiche su n (massima pulsazione di taglio)
+Bnd_n_x = [omega_n_min; omega_n_MAX; omega_n_MAX; omega_n_min];
+Bnd_n_y = [-A_n; -A_n; 100; 100];
+
+% Specifiche tempo d'assestamento (minima pulsazione di taglio)
+Bnd_Ta_x = [omega_Ta_min; omega_Ta_MAX; omega_Ta_MAX; omega_Ta_min];
+Bnd_Ta_y = [0; 0; -300; -300];
 
 
+patch(Bnd_d_x, Bnd_d_y,'r','FaceAlpha',0.2,'EdgeAlpha',0);
+patch(Bnd_n_x, Bnd_n_y,'g','FaceAlpha',0.2,'EdgeAlpha',0);
+patch(Bnd_Ta_x, Bnd_Ta_y,'b','FaceAlpha',0.2,'EdgeAlpha',0);
+
+% Legenda colori
+Legend_mag = ["A_d"; "A_n"; "\omega_{c,min}"; "G(j\omega)"];
+legend(Legend_mag);
+
+% Plot Bode con margini di stabilità
+margin(GG, {omega_plot_min, omega_plot_max});
+grid on; zoom on;
+
+Bnd_Mf_x = [omega_c_min; omega_c_MAX; omega_c_MAX; omega_c_min];
+Bnd_Mf_y = [phi_spec; phi_spec; phi_low; phi_low];
+patch(Bnd_Mf_x, Bnd_Mf_y,'g','FaceAlpha',0.2,'EdgeAlpha',0);
 
 
+% Legenda colori
+Legend_arg = ["G(j\omega)"; "M_f"];
+legend(Legend_arg);
+
+% Imposta limiti sugli assi
+xlim([1e-4, 1e6]); % Limiti della frequenza (asse X)
+ylim([-200, 200]); % Limiti della magnitudine (asse Y)
 
 
-% % Confronta le risposte in frequenza
-% % Confronta le risposte in frequenza con linee piene e tratteggiate
-% figure;
-% bodeplot(GG, 'b', GG1, 'r--'); % 'b' per blu (linea continua) e 'r--' per rosso (linea tratteggiata)
-% 
-% % Aggiungi la legenda
-% legend('GG', 'GG1');
-% 
-% % Aggiungi il titolo
-% title('Confronto tra le risposte in frequenza');
-% grid on;
+%print('-depsc', 'bode_patch.eps');
+%Fine figura 4: Diagramma di Bode con patch delle zone proibite 
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%% Regolatore statico %%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%scrivere valore minimo prescritto per L(0)
+mu_s = 1.5e4;
+
+%scrivere guadagno minimo del regolatore ottenuto come L(0)/G(0)
+G_0 = abs(evalfr(GG,0));
+s=tf('s');
+RR_s = (mu_s/G_0)/s; 
+%RR_s = mu_s/s; 
+
+% Sistema esteso
+GG_e=RR_s*GG;
+
+%% Diagrammi di Bode di Ge con specifiche
+figure(3);
+hold on;
+
+%3.2 scrivere calcolo specifiche S% => Margine di fase
+logsq = (log(S_100_spec))^2;
+xi = sqrt(logsq/(pi^2+logsq));
+Mf_spec = xi*100;
+
+% Uso 300 perchè ln(1/0.05) = circa 3, deriva dalla formula del punto 4.
+omega_Ta_MAX = 300/(Mf_spec*T_star); 
+omega_Ta_min = 1e-4; % lower bound per il plot
+
+
+% Specifiche su d
+omega_plot_min = 1e-4;
+omega_plot_max = 1e6;
+Bnd_d_x = [omega_plot_min; omega_d_MAX; omega_d_MAX; omega_plot_min];
+Bnd_d_y = [A_d;A_d;-100;-100];
+
+
+% Specifiche su n (massima pulsazione di taglio)
+Bnd_n_x = [omega_n_min; omega_n_MAX; omega_n_MAX; omega_n_min];
+Bnd_n_y = [-A_n; -A_n; 100; 100];
+
+% Specifiche tempo d'assestamento (minima pulsazione di taglio)
+Bnd_Ta_x = [omega_Ta_min; omega_Ta_MAX; omega_Ta_MAX; omega_Ta_min];
+Bnd_Ta_y = [0; 0; -300; -300];
+
+
+patch(Bnd_d_x, Bnd_d_y,'r','FaceAlpha',0.2,'EdgeAlpha',0);
+patch(Bnd_n_x, Bnd_n_y,'g','FaceAlpha',0.2,'EdgeAlpha',0);
+patch(Bnd_Ta_x, Bnd_Ta_y,'b','FaceAlpha',0.2,'EdgeAlpha',0);
+
+% Legenda colori
+Legend_mag = ["A_d"; "A_n"; "\omega_{c,min}"; "G(j\omega)"];
+legend(Legend_mag);
+
+% Plot Bode con margini di stabilità
+margin(GG_e, {omega_plot_min, omega_plot_max});
+grid on; zoom on;
+
+Bnd_Mf_x = [omega_c_min; omega_c_MAX; omega_c_MAX; omega_c_min];
+Bnd_Mf_y = [phi_spec; phi_spec; phi_low; phi_low];
+patch(Bnd_Mf_x, Bnd_Mf_y,'g','FaceAlpha',0.2,'EdgeAlpha',0);
+
+
+% Specifiche sovraelongazione (margine di fase)
+omega_c_min = omega_Ta_MAX;
+omega_c_MAX = omega_n_min;
+
+phi_spec = Mf_spec - 180;
+phi_low = -270; % lower bound per il plot
+
+% Legenda colori
+Legend_arg = ["G(j\omega)"; "M_f"];
+legend(Legend_arg);
+
+% Imposta limiti sugli assi
+xlim([1e-4, 1e6]); % Limiti della frequenza (asse X)
+ylim([-200, 200]); % Limiti della magnitudine (asse Y)
+
+print('-depsc', 'ge_bode_patch.eps');
+
+%%%%%%%% FINE regolatore statico %%%%%%%%
+
+
 
