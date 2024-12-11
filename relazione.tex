@@ -100,7 +100,7 @@ dove i parametri $r_s, r_r \in \mathbb{R}$ rappresentano i tassi di riproduzione
 Si supponga di poter misurare in ogni istante la densità di cellule resistenti $n_r(t)$
 
 
-
+\clearpage
 \section{Rappresentazione in Forma di Stato e Linearizzazione del Sistema intorno ad una coppia di equilibrio}
 
 Si riporta il sistema~\eqref{eq:system} nella seguente forma di stato
@@ -147,6 +147,9 @@ Una volta calcolate $f$ ed $h$ si esprime~\eqref{eq:system} nella seguente forma
 	\end{bmatrix} &= \begin{bmatrix}
 	r_s \bigl(1-\frac{x_1+x_2}{K}\bigr)\, x_1\, -m_s\, u\, x_1\, -\beta\, x_1\, +\gamma\, x_2\, -\alpha\, u\, x_1\ 
 	\\
+1 − ns,e+nr,e
+K
+ ns,e 
 	r_r \bigl(1-\frac{x_1+x_2 }{K}\bigr)\, x_2\, -m_r\, u\, x_2\, +\beta\, x_1\, -\gamma\, x_2\, +\alpha\, u\, x_1\ 
 \end{bmatrix} \label{eq:state_form_1}
 \end{align}
@@ -273,10 +276,11 @@ r_s \left(1 - \frac{2x_1 + x_2}{K} \right) - m_s u_e - \beta - \alpha u_e  & \fr
     \caption{Schema di controllo~\eqref{figura2}}
     \label{figura2}
 \end{figure}
-\\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ 
+
+\clearpage
 \section{Calcolo Funzione di Trasferimento}
 
-In questa sezione, si calcola la funzione di trasferimento $G(s)$ dall'ingresso $\delta u$ all'uscita $\delta y$ mediante la seguente formula 
+In questa sezione, si calcola la funzione di trasferimento $G(s)$ dall'ingresso $\delta u$ all'uscita $\delta y$, tale che $\delta Y(s) = G(s)\delta U(s)$,   mediante la seguente formula 
 %
 %
 \begin{align}\label{eq:transfer_function}
@@ -287,212 +291,82 @@ Dunque il sistema linearizzato~\eqref{eq:linearized_system} è caratterizzato da
 
 \begin{figure}[h!]
     \centering
-    \includegraphics[width=0.7\linewidth]{BodeG.png}
+    \includegraphics[scale=0.85]{diagramma_bode.eps}
     \caption{Diagramma di Bode della funzione di trasferimento G(s)}
     \label{bodediagram}
 \end{figure}
 
-
+\clearpage
 \section{Mappatura specifiche del regolatore}
 \label{sec:specifications}
 
 Le specifiche da soddisfare sono:
 \begin{itemize}
-	\item[1)] L'errore a regime in risposta ad un segnale gradino $1(t)$ sia nullo\label{spec1}
-	\item[2)] Il margine di fase $M_f\ge40^{\circ}$ per garantire robustezza al sistema\label{spec2}
-	\item[3)] La sovraelongazione percentuale massima $S\%\ge7\%$\label{spec3}
-	\item[4)] Il tempo di assestamento al $5\%$ inferiore a $1s$\label{spec4}
-	\item[5)] Il disturbo in uscita $d(t)$ risulti attenuato di 60dB sapendo che la sua banda si limita a pulsazioni nel range $[0;0.05]$\label{spec5}
-	\item[6)] Il disturbo di misura $n(t)$ risulti attenuato di 90dB sapendo che la sua banda si limita a pulsazioni nel range $[10^4;10^6]$\label{spec6}
+	\item[1)] Errore a regime nullo con riferimento a gradino $w(t)=-110\cdot1(t)$ e disturbo sull'uscita $d(t)=-20\cdot1(t)$.\label{spec1}
+	\item[2)] Per garantire una certa robustezza del sistema si deve avere un margine di fase $M_f\ge45^{\circ}$.\label{spec2}
+	\item[3)] La sovraelongazione percentuale massima $S\%\le10\%$\label{spec3}
+	\item[4)] Il tempo di assestamento al $\epsilon \% = 5\%$ deve essere inferiore al valore fissato: $T_{\alpha,\epsilon}=0.2s$.\label{spec4}
+	\item[5)] Il disturbo in uscita $d(t)$ risulti attenuato di $45dB$ sapendo che la sua banda si limita a pulsazioni nel range $[0;0.1]$\label{spec5}
+	\item[6)] Il rumore di misura $n(t)$ con una banda limitata nel range di pulsazioni $[5\cdot10^3;5\cdot10^6]$ deve essera abbattuto di almeno $80dB$ \label{spec6}
 \end{itemize}
 %
-Si effettua la mappatura punto per punto le specifiche richieste. 
+Si procede la mappatura punto per punto delle specifiche richieste. 
 \begin{itemize}
-	\item[1)] Per azzerare l'errore a regime in risposta ad un segnale a gradino si inserirà un polo nell'origine durante la sintesi del regolatore statico\
-	\item[2)] In corrispondenza della pulsazione critica $\omega_c$ si deve avere una fase maggiore di $-140^{\circ}$\
-	\item[3)] Per ottenere una sovraelongazione percentuale massima $S\%\ge7\%$ poniamo $\xi=\frac{M_f}{100}$.
+	\item[1)] Per azzerare l'errore a regime in risposta ad un segnale a gradino si inserirà un polo nell'origine durante la sintesi del regolatore statico.\
+	\item[2)] In corrispondenza della pulsazione critica $\omega_c$ si deve avere una fase maggiore di $-135^{\circ}$\
+	\item[3)] Per ottenere una sovraelongazione percentuale massima $S\%\ge10\%$ poniamo $\xi=\frac{M_f}{100}$.
 	\\
 	Sapendo che la sovraelongazione massima e la $\xi$ massima rispettano la seguente relazione:\\
-	 $S^\star=e^\frac{-\pi\xi^\star}{\sqrt{1-(\xi^\star)^2}}$.
+	 $S^\star=e^\frac{-\pi\xi^\star}{\sqrt{1-(\xi^\star)^2}}$. e quindi: \\
+     \[
+        \xi^* = \left| \frac{\ln{\left(\frac{S^*}{100}\right)}}{\sqrt{\pi^2 + \ln^2{\left(\frac{S^*}{100}\right)}}} \right|
+        \]
+        
+        \[
+        M_{f,S^*} = 100 \cdot \xi^*
+        \]
 	 \\
-	 Sostituendo $\xi$ otteniamo $M_f\ge64,6^{\circ}$.
-	\item[4)] Per ottenere un tempo di assestamento al $5\%$ inferiore a $1s$ è necessario imporre $e^{-\xi\omega_c\,T_a}=0.05$.\\
+	 Sostituendo $\xi$ otteniamo $M_f\ge59,1^{\circ}$.
+	\item[4)] Per ottenere un tempo di assestamento al $5\%$ inferiore al valore fissato  $T_{a,\epsilon}=0.2s$ è necessario imporre $e^{-\xi\omega_c\,T_a}=0.05$.\\
 	Si ottiene quindi $\xi\omega_c\ge\frac{3}{T^\star}$ con $T^\star$ tempo di assestamento massimo.\\
-	Da ciò si ricava quindi $\omega_c=\frac{300}{T^\star\,M_f}=4.644\frac{rad}{s}$.
-	\item[5)] Per riuscire ad attenuare il disturbo in uscita $d(t)$ di 60dB risulta necessario che nell'intervallo d'interesse($[0;0.05]$) $|L(j\omega)|_{dB}\ge60dB$.\
-	\item[6)] Per riuscire ad attenuare il disturbo di misura $n(t)$ di 90dB risulta necessario che nell'intervallo d'interesse($[10^4;10^6]$) $|L(j\omega)|_{dB}\le-60dB$.\
+	Da ciò si ricava quindi $\omega_c=\frac{300}{T^\star\,M_f}=25.374\frac{rad}{s}$.
+	\item[5)] Per riuscire ad attenuare il disturbo in uscita $d(t)$ di 45dB risulta necessario che nell'intervallo d'interesse($[0;0.1]$) $|L(j\omega)|_{dB}\ge45dB$.\
+	\item[6)] Per riuscire ad attenuare il disturbo di misura $n(t)$ di 80dB risulta necessario che nell'intervallo d'interesse($[5\cdot10^3;5\cdot10^6]$) $|L(j\omega)|_{dB}\le-80dB$.\
 \end{itemize}
-Pertanto, in Figura \ref{Figura 2}, si mostra il diagramma di Bode della funzione di trasferimento $G(s)$ con le zone proibite emerse dalla mappatura delle specifiche.
+\clearpage
+Pertanto, in Figura \ref{bodepatch}, si mostra il diagramma di Bode della funzione di trasferimento $G(s)$ con le zone proibite emerse dalla mappatura delle specifiche.
 
-\begin{figure}[h]
-	\centering
-	\includegraphics[width=12cm]{GGconPatch}
-	\caption[]{Diagramma di Bode di G(s) con patch delle zone proibite}
-	\label{Figura 2}
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=1\linewidth]{bode_patch.png}
+    \caption{Diagramma di Bode di G(s) con patch delle zone proibite}
+	\label{bodepatch}
 \end{figure}
 
+\clearpage
 \section{Sintesi del regolatore statico}
 \label{sec:static_regulator}
 
 
 In questa sezione si progetta il regolatore statico $R_s(s)$ partendo dalle analisi fatte in sezione~\ref{sec:specifications}.\\
 La progettazione del regolatore statico è volta alla risoluzione delle problematiche dovute alle specifiche $1$ e $5$ viste nel punto precedente.\\
-Per ottenere errore a regime nullo in risposta al riferimento a gradino inseriamo un polo nell'origine. Si considera inoltre un guadagno statico del nostro regolatore $\mu_s=200$ per ottenere l'attenuazione richiesta di 60dB sul disturbo in uscita $d(t)$ a basse pulsazioni.
+Per ottenere errore a regime nullo in risposta al riferimento a gradino inseriamo un polo nell'origine. Si considera inoltre un guadagno statico del nostro regolatore $\mu_s=1.5 \cdot 10^4$ per ottenere l'attenuazione richiesta di $45dB$ sul disturbo in uscita $d(t)$ a basse pulsazioni.
 \\
 \\
-Il regolatore statico così sintetizzato risulta essere nella forma $R_s(s)=\frac{200}{s}$.\\
-\\
-Dunque, si definisce la funzione estesa $G_e(s) = R_s(s)G(s)$ e, in Figura \ref{Figura 3}, mostrando il suo diagramma di Bode per verificare se e quali zone proibite vengono attraversate.
+Il regolatore statico così sintetizzato risulta essere nella forma $R_s(s)=\frac{1.5 \cdot 10^4}{s}$.\\
 
-\begin{figure}[H]
-	\centering
-	\includegraphics[width=12cm]{GeConPatch}
-	\caption[]{Diagramma di Bode del sistema esteso con patch delle zone proibite}
-	\label{Figura 3}
+Dunque, si definisce la funzione estesa $G_e(s) = R_s(s)G(s)$ e, in Figura \ref{geconpatch}, mostrando il suo diagramma di Bode per verificare se e quali zone proibite vengono attraversate.
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.6\linewidth]{GeConPatch.png}
+    \caption{Diagramma di Bode del sistema esteso con patch delle zone proibite}
+    \label{geconpatch}
 \end{figure}
 
 
-Da Figura \ref{Figura 3} si può osservare che le specifiche riguardanti disturbo di misura $n(t)$ risultano essere rispettate, ma la fase del sistema esteso, dopo un crollo che supera i $-180^{\circ}$, risulta essere negativa nella pulsazione critica (pulsazione di attraversamento dello 0 nel diagramma dell'ampiezza).\\
-Ciò non rispetta il teorema di Bode, il cui enunciato dice che, rispettate le ipotesi riguardo l'attraversamento dello 0 in un solo punto e la mancanza di poli a parte reale positiva (ipotesi rispettate dal nostro sistema), condizione necessaria e sufficiente per la stabilità di un sistema retroazionato è che la sua $L(j\omega)$ (in questo caso la nostra $G_e(s)$) risulti avere fase maggiore di $-180^{\circ}$ alla pulsazione critica $\omega_c$.
-Dunque il sistema non solo non rispetta le specifiche riguardo a sovraelongazione e margine di fase, ma risulta essere addirittura instabile ed è quindi necessario risollevare la fase, operazione che verrà effettuata nella sintesi del regolatore dinamico.  
-
-\section{Sintesi del regolatore dinamico}
-
-In questa sezione, si progetta il regolatore dinamico $R_d(s)$. 
-%
-Dalle analisi fatte in Sezione~\ref{sec:static_regulator}, si nota di essere nello Scenario di tipo B, in cui tutto l'intervallo d'interesse per la nostra $\omega_c$ risulta avere fase minore di $-115.4^{\circ}$($-180^{\circ}+M_f$). Procediamo dunque alla progettazione del regolatore dinamico $R_d(s)$.
-\\
-Osservando l'andamento della $G(s)$ si può notare che l'andamento del diagramma della fase risulta essere estremamente vicino al rispetto delle specifiche. Pertanto si è scelto di inserire uno zero a basse frequenze all'interno del regolatore dinamico $R_d(s)$ ottenendo così la forma $R_d(s)=(1+5s)$.
-\\
-\\
-In Figura \ref{Figura 4}, si osserva il diagramma di Bode della funzione dopo l'inserimento di uno zero a basse frequenze ($\omega_z=0.2$ $rad/s$).
-
-\begin{figure}[H]
-	\centering
-	\includegraphics[width=12cm]{G_zeroConPatch}
-	\caption[]{Diagramma di Bode del sistema esteso dopo l'inserimento dello zero}
-	\label{Figura 4}
-\end{figure}
-
-Dal diagramma così ottenuto si può osservare come il sistema non rispetti ora la specifica riguardo l'attenuazione dei disturbi di misura $n(t)$ ad alte frequenze.
-\\
-Per ovviare a questo problema si inseriscono più poli ad alte frequenze. L'espressione del regolatore dinamico $R_d(s)$ risulta quindi essere $R_d(s)=\frac{(1+5s)}{(1+\frac{1}{2000}s)^4}$ .
-\\
-
-In Figura \ref{Figura 5}, si mostra il diagramma di Bode della funzione d'anello $L(s) = R_d(s) G_e(s)$
-
-\begin{figure}[H]
-	\centering
-	\includegraphics[width=12cm]{LLconPatch}
-	\caption[]{Diagramma di Bode del sistema esteso con regolatore dinamico completo}
-	\label{Figura 5}
-\end{figure}
-
-Dopo la sintetizzazione del regolatore dinamico il sistema risulta essere correttamente regolato.
-\section{Test sul sistema linearizzato}
-\label{sec:testsistemalinearizzato}
-
-In questa sezione, si testa l'efficacia del controllore progettato sul sistema linearizzato in risposta a segnali $w(t)=-2\cdot1(t)$, $d(t)=\sum_{k=1}^{4}0.3sin(0.0125kt)$ e $n(t)=\sum_{k=1}^{4}0.2sin(10^4kt)$.
-\\
-\\
-Dopo aver ricavato le funzioni di sensitività $F(s)$ e $S(s)$ si analizza la risposta del sistema al segnale a gradino $w(t)$ (in Figura \ref{Figura 6}), al disturbo $d(t)$ (in Figura \ref{Figura 7}) e al disturbo $n(t)$ (in Figura \ref{Figura 8}) singolarmente.  
-\\
-\begin{figure}[H]
-	\centering
-	\includegraphics[width=12cm]{RispostaAGradino}
-	\caption[]{Risposta al gradino con vincoli di sovraelongazione e tempo di assestamento evidenziati}
-	\label{Figura 6}
-\end{figure}
-\begin{figure}[H]
-	\centering
-	\includegraphics[width=12cm]{RispostaAd(t)}
-	\caption[]{Risposta al disturbo $d(t)$}
-	\label{Figura 7}
-\end{figure}
-\begin{figure}[H]
-	\centering
-	\includegraphics[width=12cm]{RispostaAn(t)}
-	\caption[]{Risposta al disturbo $n(t)$}
-	\label{Figura 8}
-\end{figure}
-
-Si osserva che $y_w(t)$ rispetta pienamente le specifiche, inoltre $y_d(t)$ e $y_n(t)$ risultano essere attenuati in accordo ai requisiti.
-\\
-Si procede ora a sommare le tre risposte per ottenere il grafico della risposta complessiva del sistema (In Figura \ref{Figura 9}).\\
-\begin{figure}[H]
-	\centering
-	\includegraphics[width=12cm]{RispostaComplessiva}
-	\caption[]{Risposta complessiva $y(t)$}
-	\label{Figura 9}
-\end{figure}
-\section{Test sul sistema non lineare}
-
-In questa sezione si testa l'efficacia del controllore progettato sul modello non lineare in riferimento ai segnali visti nella Sezione \ref{sec:testsistemalinearizzato}.
-\\
-Per effettuare i test si è utilizzato l'ambiente Simulink offerto da Matlab.
-Si è realizzato un modello di sistema in retroazione così strutturato.
-\begin{figure}[H]
-	\centering
-	\includegraphics[width=15cm]{SistemaNonLineare}
-	\caption[]{Risposta complessiva $y(t)$}
-	\label{Figura 10}
-\end{figure}
-
-Nel caso di test riportato vengono considerati condizioni iniziali $x_0=\begin{bmatrix}
-	95
-	\\
-	102
-\end{bmatrix}$, il cui risultato è visibile in Figura \ref{Figura 11}
-\begin{figure}[H]
-	\centering
-	\includegraphics[width=12cm]{TestSistemaNonLinearizzato}
-	\caption[]{Test del regolatore sul sistema non lineare}
-	\label{Figura 11}
-\end{figure}
-
-A seguito dei test effettuati il sistema può dirsi stabile e regolato in accordo con le specifiche fornite, risulta inoltre possibile modificare le condizioni iniziali per testare altri casi, nei punti successivi si analizzerà la stabilità del sistema regolato allontanandosi dall'equilibrio e con vari riferimenti $w(t)$.
-\section{Punti opzionali}
-Al fine di ottenere i risultati in seguito riportati è stato utilizzato il modello realizzato su Simulink registrando gli output per realizzare l'interfaccia grafica e modificando condizioni iniziali ed ampiezza del gradino di riferimento su Matlab e osservando i risultati sul modello.
-
-\subsection{Primo punto}
-
-Per visualizzare l'andamento del numero di cellule all'interno della coltura si è scelto di utilizzare un diagramma a barre. L'applicazione utilizza il modello Simulink apportando una leggera modifica in modo che i valori di $n_s$ e $n_r$ siano visibili nel workspace. Impostando le condizioni iniziali tramite comando Matlab, avendo cura di aprire il progetto Simulink correlato, si può avviare la simulazione che mostra un'animazione dei diagrammi al trascorrere del tempo.
-
-\subsection{Secondo punto}
-Si analizza in questo punto la stabilità del sistema al variare delle condizioni iniziali posto il riferimento a 0 (non distanziandosi quindi dal punto di equilibrio).
-Nel grafico riportato in Figura \ref{Figura 12} vengono evidenziate i range di condizioni iniziali (con precisione approssimata a valori interi in un piccolo intorno dell'equilibrio e a multipli di 5 successivamente). In rosso sono evidenziate le coordinate delle condizioni iniziali che non portano alla stabilità, in grigio la zona non considerata a causa della specifica sul numero massimo di cellule della coltura, in verde le coordinate che mantengono stabile il sistema e le zone bianche sono zone di transizione, in cui non sono stati effettuati test accurati.
-\\
- \begin{figure}[H]
- 	\centering
- 	\includegraphics[width=12cm]{RangeCondInit}
- 	\caption[]{Tabella dei valori validi del riferimento a gradino}
- 	\label{Figura 12}
- \end{figure}
-
-
-\subsection{Terzo punto}
-
-In questo punto si analizza la stabilità del sistema al variare dell'ampiezza del riferimento a gradino.
-\\
-Viene di seguito riportata (Figura \ref{Figura 13}) una tabella con i valori per i quali il sistema si mantiene stabile. 
-\begin{figure}[H]
-	\centering
-	\includegraphics[width=12cm]{TabellaValoriGradino}
-	\caption[]{Tabella dei valori validi del riferimento a gradino}
-	\label{Figura 13}
-\end{figure}
-\section{Conclusioni}
-
-Durante il progetto si è realizzato un regolatore che permette il controllo del numero di cellule cancerose resistenti ad un determinato farmaco. Il riferimento considerato risulta essere relativo all'equilibrio; ciò è dovuto alla necessità di linearizzare il sistema per la progettazione del regolatore $R(s)$, questo causa una relativizzazione rispetto all'equilibrio preso in considerazione.
-\\
-Esplorando il range di condizioni iniziali possibili è possibile osservare come la diminuzione delle cellule sensibili non risulti particolarmente rilevante rispetto alla stabilità del sistema, contrariamente a quella delle cellule resistenti. Questo comportamento può essere spiegato tenendo in considerazione che il sistema utilizza come unico parametro in retroazione il numero di cellule resistenti presenti nella coltura.
-\\
-Si può osservare anche che è possibile aumentare significativamente il numero di cellule resistenti iniziali, aumento che viene limitato dal numero di cellule sensibili presenti.
-\\
-Esplorando il range del riferimento a gradino si osserva come il sistema rimanga stabile imponendo una riduzione delle cellule resistenti rispetto all'equilibrio, mentre imponendo un aumento il sistema diventa rapidamente instabile.
-\\
-\\
-Come considerazione finale si noti inoltre che tutti i range presi in analisi astraggono notevolmente il problema, infatti si è tenuto conto solamente del raggiungimento del riferimento a regime, trascurando fattori imprescindibili nello studio del caso reale, quali una concentrazione negativa di farmaco (fisicamente non ottenibile) o un numero negativo di cellule in un istante di tempo (anch'esso privo di significato in un contesto reale).
-
-\end{document}
-
+Da Figura \ref{geconpatch} si può osservare che le specifiche riguardanti disturbo di misura $n(t)$ risultano essere rispettate dato che $|L(j\omega)|_{dB}\le-80dB$. \\
+La fase del sistema esteso, non supera i $-180^{\circ}$.\\
+Ciò rispetta il teorema di Bode, il cui enunciato dice che, rispettate le ipotesi riguardo l'attraversamento dello 0 in un solo punto e la mancanza di poli a parte reale positiva (ipotesi rispettate dal nostro sistema), condizione necessaria e sufficiente per la stabilità di un sistema retroazionato è che la sua $L(j\omega)$ (in questo caso la nostra $G_e(s)$) risulti avere fase maggiore di $-180^{\circ}$ alla pulsazione critica $\omega_c$.
+Dalla figura si nota che non è rispettata la specifica sul margine di fase
+ed è quindi necessario risollevare la fase, operazione che verrà effettuata nella sintesi del regolatore dinamico. 
